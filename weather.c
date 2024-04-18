@@ -82,7 +82,7 @@ void weather(const char *city, int sockfd){
             else{
                 printf("input error!\n");
             }
-            scanf("%s", number);
+            scanf("%c", number);
         }
     }
 }
