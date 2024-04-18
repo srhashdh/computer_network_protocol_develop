@@ -20,8 +20,9 @@ char* conn_02_01(int sockfd, const char *city, int n) {
     memcpy(message + 2, city, strlen(city));
 
     memset(message + 2 + strlen(city), 0x00, 33 - strlen(city));
-    sprintf(n, "%x", n);
-    memset(message + 33, n, 1);
+    char n_hex;
+    sprintf(n_hex, "%x", n);
+    memset(message + 33, n_hex, 1);
 
     if (send(sockfd, message, MESSAGE_SIZE, 0) == -1) {
         perror("send");
