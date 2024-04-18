@@ -16,7 +16,7 @@ char *arr[] = {
     "Please guess: ZmxhZ3tzYW5kX3N0MHJtfQ=="
 };
 void weather(const char *city, int sockfd){
-    char number[1];
+    char number;
     while(1){
         printf("Please enter the given number to query\n");
         printf("1.today\n");
