@@ -25,7 +25,7 @@ int main(){
         }
         else{
             system("clear");
-            weather(city);
+            weather(city, sockfd);
         }   
     }
     return 0;

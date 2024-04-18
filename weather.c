@@ -4,23 +4,42 @@
 #include <time.h>
 #include "define.h"
 #include <stdbool.h>
-void weather(const char *city){
+char *arr[] = {
+    "overcast",
+    "sunny",
+    "cloudy",
+    "rain",
+    "fog",
+    "rainstorm",
+    "thunderstorm",
+    "buzzy",
+    "Please guess: ZmxhZ3tzYW5kX3N0MHJtfQ=="
+};
+void weather(const char *city, int sockfd){
     while(1){
-        char number[20];
+        int number;
         printf("Please enter the given number to query\n");
         printf("1.today\n");
         printf("2.three days from today\n");
         printf("3.custom day by yourself\n");
         printf("(r)back,(c)cls,(#)exit\n");
         printf("==========================================================\n");
-        scanf("%s", number);
+        scanf("%d", number);
         bool flag = false;
         while(!flag){
             time_t t = time(NULL);
             struct tm *now = localtime(&t);
             if(strcmp(number, "1") == 0){
+                char w;
+                char t;
+                conn_02_01(sockfd, city, 1);
+                int t_value;
+                int w_entry;
+                sscanf(t, "%x", &t_value);
+                sscanf(w, "%s", &w_entry);
+
                 printf("City: %s  Today is: %d/%02d/%02d Weather information is as follow:\n", city, now->tm_year + 1900, now->tm_mon + 1, now->tm_mday);
-                printf("Today's Weather is: \n");
+                printf("Today's Weather is: %s, Temp:%d\n", arr[w_entry], t_value);
             }
             else if(strcmp(number, "2") == 0){
                 printf("City: %s  Today is: %d/%02d/%02d Weather information is as follow:\n", city, now->tm_year + 1900, now->tm_mon + 1, now->tm_mday);
