@@ -17,7 +17,7 @@ char *arr[] = {
 };
 void weather(const char *city, int sockfd){
     while(1){
-        int number;
+        char number;
         printf("Please enter the given number to query\n");
         printf("1.today\n");
         printf("2.three days from today\n");
