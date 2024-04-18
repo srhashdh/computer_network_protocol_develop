@@ -30,8 +30,8 @@ void weather(const char *city, int sockfd){
             time_t t = time(NULL);
             struct tm *now = localtime(&t);
             if(strcmp(number, "1") == 0){
-                char w;
-                char t;
+                char* w;
+                char* t;
                 conn_02_01(sockfd, city, 1);
                 int t_value;
                 int w_entry;
