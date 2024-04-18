@@ -20,7 +20,7 @@ char* conn_02_01(int sockfd, const char *city, int n) {
     memcpy(message + 2, city, strlen(city));
 
     memset(message + 2 + strlen(city), 0x00, 33 - strlen(city));
-    char n_hex;
+    char n_hex[2];
     sprintf(n_hex, "%x", n);
     memset(message + 33, n_hex, 1);
 
@@ -35,6 +35,6 @@ char* conn_02_01(int sockfd, const char *city, int n) {
         perror("recv");
         exit(EXIT_FAILURE);
     }
-    char* w[] = response[37];
-    char* t[] = response[38];
+    char* w[] = &response[37];
+    char* t[] = &response[38];
 }
