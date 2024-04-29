@@ -30,16 +30,8 @@ void weather(const char *city, int sockfd){
             time_t t = time(NULL);
             struct tm *now = localtime(&t);
             if(strcmp(number, "1") == 0){
-                char* w;
-                char* t;
-                conn_02_01(sockfd, city, 1);
-                int t_value;
-                int w_entry;
-                sscanf(t, "%x", &t_value);
-                sscanf(w, "%x", &w_entry);
-
                 printf("City: %s  Today is: %d/%02d/%02d Weather information is as follow:\n", city, now->tm_year + 1900, now->tm_mon + 1, now->tm_mday);
-                printf("Today's Weather is: %s, Temp:%d\n", arr[w_entry], t_value);
+                printf("Today's Weather is: %d, Temp:%d\n", 1, 1);
             }
             else if(strcmp(number, "2") == 0){
                 printf("City: %s  Today is: %d/%02d/%02d Weather information is as follow:\n", city, now->tm_year + 1900, now->tm_mon + 1, now->tm_mday);
