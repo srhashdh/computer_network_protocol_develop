@@ -28,8 +28,8 @@ bool conn_01(int sockfd, const char *city) {
         perror("recv");
         exit(EXIT_FAILURE);
     }	
-	memcpy(&req, buffer2, sizeof(request));
-    if (res.page == 0x02) {
+	memcpy(&res, buffer2, sizeof(request));
+    if (res.page == 2) {
         return false;
     } else {
         return true;

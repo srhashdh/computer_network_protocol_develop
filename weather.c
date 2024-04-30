@@ -54,7 +54,7 @@ void weather(const char *city, int sockfd){
                         int w;
                         conn_02_01(sockfd, city, n, &t, &w);
                         printf("City: %s  Today is: %d/%02d/%02d Weather information is as follow:\n", city, now->tm_year + 1900, now->tm_mon + 1, now->tm_mday);
-                        printf("The %dth day's Weather is: %s;  Temp:%d\n", arr[w], t);
+                        printf("The %dth day's Weather is: %s;  Temp:%d\n", n, arr[w], t);
                         flag2 = true;
                     }
                     else if(n == 1){
