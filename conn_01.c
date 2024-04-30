@@ -5,8 +5,7 @@
 #include <arpa/inet.h>
 #include <stdbool.h>
 #include "define.h"
-#define request_SIZE 33
-#define response_SIZE 127
+
 
 bool conn_01(int sockfd, const char *city) {
     request req;
@@ -19,8 +18,8 @@ bool conn_01(int sockfd, const char *city) {
 
     char buffer[sizeof(request)];
     memcpy(buffer, &req, sizeof(request));
-
-
+    printf("sockfd: %d\n", sockfd);
+    sleep(2);
     if (send(sockfd, buffer, sizeof(request), 0) == -1) {
         perror("send");
         exit(EXIT_FAILURE);

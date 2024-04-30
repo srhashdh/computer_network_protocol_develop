@@ -19,13 +19,12 @@ int conn(){
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(server_port);
 
-    // 将 IP 地址从文本转换为二进制格式
+    
     if (inet_pton(AF_INET, server_ip, &server_addr.sin_addr) <= 0) {
         perror("inet_pton");
         exit(EXIT_FAILURE);
     }
 
-    // 连接到服务器
     if (connect(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1) {
         perror("connect");
         exit(EXIT_FAILURE);
