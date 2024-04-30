@@ -7,6 +7,7 @@ void weather(const char *city, int sockfd);
 int conn();
 bool conn_01(int sockfd, const char *city);
 void conn_02_01(int sockfd, const char *city, int n, int *t, int *w);
+void conn_02_02(int sockfd, const char *city, int n, int *t_1, int *w_1, int *t_2, int *w_2, int *t_3, int *w_3);
 typedef struct {
     uint8_t page;
     uint8_t query;

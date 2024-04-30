@@ -37,10 +37,17 @@ void weather(const char *city, int sockfd){
                 printf("Today's Weather is: %s;  Temp:%d\n", arr[w], t);
             }
             else if(strcmp(number, "2") == 0){
+				int t_1;
+				int w_1;
+				int t_2;
+                int w_2;
+				int t_3;
+                int w_3;
+				conn_02_02(sockfd, city, 3, &t_1, &w_1, &t_2, &w_2, &t_3, &w_3);
                 printf("City: %s  Today is: %d/%02d/%02d Weather information is as follow:\n", city, now->tm_year + 1900, now->tm_mon + 1, now->tm_mday);
-                printf("The 1th day's Weather is: \n");
-                printf("The 2th day's Weather is: \n");
-                printf("The 3th day's Weather is: \n");
+                printf("The 1th day's Weather is: %s;  Temp:%d\n", arr[w_1], t_1);
+                printf("The 2th day's Weather is: %s;  Temp:%d\n", arr[w_2], t_2);
+                printf("The 3th day's Weather is: %s;  Temp:%d\n", arr[w_3], t_3);
             }
             else if(strcmp(number, "3") == 0){
                 printf("Please enter the day number(below 10, e.g. 1 means today):");
