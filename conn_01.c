@@ -29,7 +29,7 @@ bool conn_01(int sockfd, const char *city) {
         exit(EXIT_FAILURE);
     }	
 	memcpy(&req, buffer2, sizeof(request));
-    if (res.page == 1) {
+    if (res.page == 0x02) {
         return false;
     } else {
         return true;
