@@ -9,28 +9,28 @@
 
 void conn_02_01(int sockfd, const char *city, int n, int *t, int *w) {
     request req;
-    req.page = 2;
-    req.query = 1;
+    req.page = 0x02;
+    req.query = 0x01;
     memcpy(req.city, city, strlen(city));
     memset(req.city + strlen(city), 0x00, 30 - strlen(city));
     req.date = n;
 
 
-    char buffer[sizeof(request)];
-    memcpy(buffer, &req, sizeof(request));
-    printf("buffer: %s\n", buffer);
-    printf("req: %d\n", sockfd);
-    if (send(sockfd, buffer, sizeof(request), 0) == -1) {
+    char buffer1[sizeof(request)];
+    memcpy(buffer1, &req, sizeof(request));
+    if (send(sockfd, buffer1, sizeof(request), 0) == -1) {
         perror("send");
         exit(EXIT_FAILURE);
     }
     response res;
     ssize_t num_bytes;
-
-    if ((num_bytes = recv(sockfd, &res, 1, 0)) == -1) {
+	char buffer2[sizeof(response)];
+    if ((num_bytes = recv(sockfd, buffer2, sizeof(response), 0)) == -1) {
         perror("recv");
         exit(EXIT_FAILURE);
     }
-    *t = res.temp_1;
+    memcpy(&res, buffer2, sizeof(response));
+    
+	*t = res.temp_1;
     *w = res.weather_1;
 }

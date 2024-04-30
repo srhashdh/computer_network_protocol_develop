@@ -15,23 +15,21 @@ bool conn_01(int sockfd, const char *city) {
     memset(req.city + strlen(city), 0x00, 30 - strlen(city));
     req.date = 0;
 
-
-    char buffer[sizeof(request)];
-    memcpy(buffer, &req, sizeof(request));
-    printf("sockfd: %d\n", sockfd);
-    sleep(2);
-    if (send(sockfd, buffer, sizeof(request), 0) == -1) {
+    char buffer1[sizeof(request)];
+    memcpy(buffer1, &req, sizeof(request));
+    if (send(sockfd, buffer1, sizeof(request), 0) == -1) {
         perror("send");
         exit(EXIT_FAILURE);
     }
     response res;
     ssize_t num_bytes;
-
-    if ((num_bytes = recv(sockfd, &res, 1, 0)) == -1) {
+	char buffer2[sizeof(response)];
+    if ((num_bytes = recv(sockfd, buffer2, sizeof(response), 0)) == -1) {
         perror("recv");
         exit(EXIT_FAILURE);
-    }
-    if (res.page == 0x02) {
+    }	
+	memcpy(&req, buffer2, sizeof(request));
+    if (res.page == 2) {
         return false;
     } else {
         return true;

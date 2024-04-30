@@ -34,7 +34,7 @@ void weather(const char *city, int sockfd){
                 int w;
                 conn_02_01(sockfd, city, 1, &t, &w);
                 printf("City: %s  Today is: %d/%02d/%02d Weather information is as follow:\n", city, now->tm_year + 1900, now->tm_mon + 1, now->tm_mday);
-                printf("Today's Weather is: %d, Temp:%d\n", w, t);
+                printf("Today's Weather is: %s;  Temp:%d\n", arr[w], t);
             }
             else if(strcmp(number, "2") == 0){
                 printf("City: %s  Today is: %d/%02d/%02d Weather information is as follow:\n", city, now->tm_year + 1900, now->tm_mon + 1, now->tm_mday);
