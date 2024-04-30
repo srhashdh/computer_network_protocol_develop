@@ -50,11 +50,17 @@ void weather(const char *city, int sockfd){
                     printf("Please enter the day number(below 10, e.g. 1 means today):");
                     scanf("%d", &n);
                     if(n > 1 && n < 10){
+                        int t;
+                        int w;
+                        conn_02_01(sockfd, city, n, &t, &w);
                         printf("City: %s  Today is: %d/%02d/%02d Weather information is as follow:\n", city, now->tm_year + 1900, now->tm_mon + 1, now->tm_mday);
                         printf("The %dth day's Weather is: \n", n);
                         flag2 = true;
                     }
                     else if(n == 1){
+                        int t;
+                        int w;
+                        conn_02_01(sockfd, city, 1, &t, &w);
                         printf("City: %s  Today is: %d/%02d/%02d Weather information is as follow:\n", city, now->tm_year + 1900, now->tm_mon + 1, now->tm_mday);
                         printf("Today's Weather is: \n");
                         flag2 = true;
