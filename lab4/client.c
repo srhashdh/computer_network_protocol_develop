@@ -13,14 +13,14 @@ int main(){
 	int sock;
 	struct sockaddr_in serv_addr;
 	serv_addr.sin_family = AF_INET;
-    serv_addr.sin_family = htons(PORT);
+    serv_addr.sin_port = htons(PORT);
     serv_addr.sin_addr.s_addr = inet_addr(SERVER_IP);
 
 
 	for(int i = 0; i < TOTAL_CONNECTIONS; i++){
 		sock = socket(AF_INET, SOCK_STREAM, 0);
 		if(sock == -1){
-			printf("\n Socket creation error \n");
+			printf("\n Socket creation error %d\n", i);
 			return -1;
 		}
 		
@@ -28,6 +28,7 @@ int main(){
 			printf("\nConnection Failed\n");
 			return -1;
 		}
+		printf("%d success\n", i);
 	}
 	return 0;
 }

@@ -39,15 +39,16 @@ int main(){
 	}
 
 	printf("Server is listening on port %d\n", PORT);
-
+	int i = 0;
 	while(1){
 		if((new_socket = accept(server_fd, (struct sockaddr*)&address, (socklen_t*)&addrlen)) < 0){
 			perror("accept");
 			exit(EXIT_FAILURE);
 		}
 		else{
-			printf("received!!!");
+			printf("received!!! %d\n", i);
 		}
+		++i;
 		close(new_socket);
 	}
 
