@@ -6,7 +6,7 @@
 #include <sys/socket.h>
 
 #define PORT 8080
-#define SERVER_IP "192.168.8.159"
+#define SERVER_IP "192.168.8.185"
 #define TOTAL_CONNECTIONS 1000000
 
 int main(){
