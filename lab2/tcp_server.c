@@ -3,81 +3,102 @@
 #include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <sys/socket.h>
+#include <sys/poll.h>
+#include <netinet/in.h>
 
 #define PORT 8080
-#define BUFFER_SIZE 1024
+#define MAX_CLIENTS 5
 
-int main() {
-    int server_socket, client_socket;
-    struct sockaddr_in server_addr, client_addr;
-    socklen_t client_addr_len;
-    char buffer[BUFFER_SIZE];
+int main(){
+    int server_fd, new_socket, client_sockets[MAX_CLIENTS];
+    struct sockaddr_in address;
+    int addrlen = sizeof(address);
+    struct pollfd fds[MAX_CLIENTS + 1];
+    int nfds = 1;
+    int current_clients = 0;
+    char buffer[1025];
 
-    // 创建socket
-    server_socket = socket(AF_INET, SOCK_STREAM, 0);
-    if (server_socket == -1) {
-        perror("Socket creation failed");
+
+
+    for(int i = 0; i < MAX_CLIENTS; i++){
+        client_sockets[i] = 0;
+    }
+
+    if((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0){
+        perror("socket failed");
         exit(EXIT_FAILURE);
     }
 
-    // 设置服务器地址
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = INADDR_ANY;
-    server_addr.sin_port = htons(PORT);
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_port = htons(PORT);
 
-    // 将socket绑定到指定地址和端口
-    if (bind(server_socket, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1) {
-        perror("Binding failed");
+    if(bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0){
+        perror("bind failed");
         exit(EXIT_FAILURE);
     }
 
-    // 监听连接请求
-    if (listen(server_socket, 5) == -1) {
-        perror("Listening failed");
+
+    if(listen(server_fd, MAX_CLIENTS) < 0){
+        perror("listen failed");
         exit(EXIT_FAILURE);
     }
 
-    printf("Server listening on port %d...\n", PORT);
+    fds[0].fd = server_fd;
+    fds[0].events = POLLIN;
 
-    while (1) {
-        // 接受客户端连接
-        client_addr_len = sizeof(client_addr);
-        client_socket = accept(server_socket, (struct sockaddr *)&client_addr, &client_addr_len);
-        if (client_socket == -1) {
-            perror("Accepting connection failed");
+    printf("Server start. Waiting for connection on port %d...\n", PORT);
+
+    while(1){
+        int poll_status = poll(fds, nfds, -1);
+        
+        if(poll_status == -1){
+            perror("poll failed");
             exit(EXIT_FAILURE);
         }
 
-        printf("Client connected: %s:%d\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
-
-        // 接收消息并将其发送回客户端
-        while (1) {
-            int bytes_received = recv(client_socket, buffer, BUFFER_SIZE, 0);
-            if (bytes_received == -1) {
-                perror("Receiving message failed");
+        if(fds[0].revents & POLLIN){
+            if((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0){
+                perror("accept failed");
                 exit(EXIT_FAILURE);
-            } else if (bytes_received == 0) {
-                printf("Client disconnected.\n");
-                break;
             }
 
-            buffer[bytes_received] = '\0';
-            printf("Received message from client: %s", buffer);
+            printf("New connection, IP is %s, port : %d\n", inet_ntoa(address.sin_addr), ntohs(address.sin_port));
 
-            // 将消息发送回客户端
-            if (send(client_socket, buffer, strlen(buffer), 0) == -1) {
-                perror("Sending message failed");
-                exit(EXIT_FAILURE);
+            for(int i = 1; i < MAX_CLIENTS + 1; i++){
+                if(client_sockets[i - 1] == 0){
+                    client_sockets[i - 1] = new_socket;
+                    fds[i].fd = new_socket;
+                    fds[i].events = POLLIN;
+                    nfds++;
+                    current_clients++;
+                    printf("Adding client to list of sockets as %d\n", i);
+                    break;
+                }
             }
         }
-
-        // 关闭客户端socket
-        close(client_socket);
+        for(int i = 1; i < nfds; i++){
+            if(fds[i].revents & POLLIN){
+                int client_socket = fds[i].fd;
+                int valread;
+            
+                if((valread = read(client_socket, buffer, 1024)) == 0){
+                
+                    getpeername(client_socket, (struct sockaddr *)&address, (socklen_t *)&address);
+                    printf("Host disconnected, IP %s, port %d\n", inet_ntoa(address.sin_addr), ntohs(address.sin_port));
+                    close(client_socket);
+                    fds[i].fd = -1;
+                    client_sockets[i - 1] = 0;
+                    current_clients--;
+                }
+                else{
+                    buffer[valread] = '\0';
+                    printf("Client port %d messaage: %s\n", ntohs(address.sin_port), buffer);
+                    send(client_socket, buffer, strlen(buffer), 0);
+                }
+            }
+        }
     }
-
-    // 关闭服务器socket
-    close(server_socket);
-
     return 0;
 }
-
