@@ -94,7 +94,7 @@ int main(){
                 }
                 else{
                     buffer[valread] = '\0';
-                    printf("Client port %d messaage: %s\n", ntohs(address.sin_port), buffer);
+                    printf("Client messaage: %s\n", buffer);
                     send(client_socket, buffer, strlen(buffer), 0);
                 }
             }
