@@ -1,104 +1,78 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <sys/poll.h>
-#include <netinet/in.h>
-
-#define PORT 8080
-#define MAX_CLIENTS 5
+#include "define.h"
 
 int main(){
-    int server_fd, new_socket, client_sockets[MAX_CLIENTS];
+    int server_fd, epoll_fd;
     struct sockaddr_in address;
+    int opt = 1;
     int addrlen = sizeof(address);
-    struct pollfd fds[MAX_CLIENTS + 1];
-    int nfds = 1;
-    int current_clients = 0;
-    char buffer[1025];
+    struct epoll_event event, events[MAX_EVENTS];
 
+    //create server socket
 
-
-    for(int i = 0; i < MAX_CLIENTS; i++){
-        client_sockets[i] = 0;
-    }
-
-    if((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0){
-        perror("socket failed");
-        exit(EXIT_FAILURE);
-    }
-
+    server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt));
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(PORT);
+    bind(server_fd, (struct sockaddr *)&address, sizeof(address));
+    listen(server_fd, SOMAXCONN);
 
-    if(bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0){
-        perror("bind failed");
-        exit(EXIT_FAILURE);
-    }
+    //create epoll instance
 
-
-    if(listen(server_fd, MAX_CLIENTS) < 0){
-        perror("listen failed");
-        exit(EXIT_FAILURE);
-    }
-
-    fds[0].fd = server_fd;
-    fds[0].events = POLLIN;
-
-    printf("Server start. Waiting for connection on port %d...\n", PORT);
-
+    epoll_fd = epoll_create1(0);
+    event.events = EPOLLIN;
+    event.data.fd = server_fd;
+    epoll_ctl(epoll_fd, EPOLL_CTL_ADD, server_fd, &event);
+    
     while(1){
-        int poll_status = poll(fds, nfds, -1);
-        
-        if(poll_status == -1){
-            perror("poll failed");
-            exit(EXIT_FAILURE);
-        }
+        int n = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);
+        for(int i = 0; i < n; i++){
+            if(events[i].data.fd == server_fd){
+                //accept new connection
+                struct sockaddr_in client_addr;
+                socklen_t client_len = sizeof(client_addr);
+                int client_fd = accept(server_fd, (struct sockaddr *)&client_addr, &client_len);
+                    
+                //distribute memory and store client info
+                struct client_info *client = malloc(sizeof(struct client_info));
+                client -> fd = client_fd;
+                client -> addr = client_addr;
 
-        if(fds[0].revents & POLLIN){
-            if((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0){
-                perror("accept failed");
-                exit(EXIT_FAILURE);
-            }
-
-            printf("New connection, IP is %s, port : %d\n", inet_ntoa(address.sin_addr), ntohs(address.sin_port));
-
-            for(int i = 1; i < MAX_CLIENTS + 1; i++){
-                if(client_sockets[i - 1] == 0){
-                    client_sockets[i - 1] = new_socket;
-                    fds[i].fd = new_socket;
-                    fds[i].events = POLLIN;
-                    nfds++;
-                    current_clients++;
-                    printf("Adding client to list of sockets as %d\n", i);
-                    break;
+                for(int j = 0; j < MAX_EVENTS; j++){
+                    if(!clients[j]){
+                        clients[j] = client;
+                        break;
+                    }
                 }
+                    
+                event.events = EPOLLIN;
+                event.data.ptr = client;
+                epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_fd, &event);
+                printf("New connection from %s: %d\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
             }
-        }
-        for(int i = 1; i < nfds; i++){
-            if(fds[i].revents & POLLIN){
-                int client_socket = fds[i].fd;
-                int valread;
-            
-                if((valread = read(client_socket, buffer, 1024)) == 0){
                 
-                    getpeername(client_socket, (struct sockaddr *)&address, (socklen_t *)&address);
-                    printf("Host disconnected, IP %s, port %d\n", inet_ntoa(address.sin_addr), ntohs(address.sin_port));
-                    close(client_socket);
-                    fds[i].fd = -1;
-                    client_sockets[i - 1] = 0;
-                    current_clients--;
+            else{
+                //handle client info
+                struct client_info *client = (struct client_info *)events[i].data.ptr;
+                char buffer[BUFFER_SIZE];
+                int valread = read(client -> fd, buffer, BUFFER_SIZE);
+                
+                if(valread > 0){
+                    buffer[valread] = '\0'; //make sure the string is null terminated
+                    char client_ip[INET_ADDRSTRLEN];
+                    inet_ntop(AF_INET, &(client -> addr.sin_addr), client_ip, INET_ADDRSTRLEN);
+                    printf("Message from client %s:%d %s\n", client_ip, ntohs(client -> addr.sin_port), buffer);
                 }
                 else{
-                    buffer[valread] = '\0';
-                    printf("Client messaage: %s\n", buffer);
-                    send(client_socket, buffer, strlen(buffer), 0);
-                }
+                    printf("Client disconnected %s:%d\n", inet_ntoa(client -> addr.sin_addr), ntohs(client -> addr.sin_port));
+                    epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client -> fd, NULL);
+
+                    close(client -> fd);
+                }              
             }
         }
     }
+
+    close(server_fd);
     return 0;
 }
