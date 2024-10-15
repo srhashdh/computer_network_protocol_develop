@@ -21,8 +21,11 @@ int main() {
     }
 
     printf("Connected to server.\n");
-
-    while (1) {
+    printf("What's your name: ");
+    fgets(buffer, BUFFER_SIZE, stdin);
+    buffer[strcspn(buffer, "\n")] = 0;
+    send(client_socket, buffer, strlen(buffer), 0);
+    while (1){
         printf("Enter message: ");
         fgets(buffer, BUFFER_SIZE, stdin);
         buffer[strcspn(buffer, "\n")] = 0;

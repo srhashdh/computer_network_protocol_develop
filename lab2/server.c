@@ -32,12 +32,14 @@ int main(){
                 struct sockaddr_in client_addr;
                 socklen_t client_len = sizeof(client_addr);
                 int client_fd = accept(server_fd, (struct sockaddr *)&client_addr, &client_len);
-                    
+                
+                //set to non-blocking model
+                set_nonblocking(client_fd);                    
                 //distribute memory and store client info
                 struct client_info *client = malloc(sizeof(struct client_info));
                 client -> fd = client_fd;
                 client -> addr = client_addr;
-
+                client -> name[0] = '\0';
                 for(int j = 0; j < MAX_EVENTS; j++){
                     if(!clients[j]){
                         clients[j] = client;
@@ -59,15 +61,30 @@ int main(){
                 
                 if(valread > 0){
                     buffer[valread] = '\0'; //make sure the string is null terminated
+                    if(client -> name[0] == '\0'){
+                        strcpy(client -> name, buffer);
+                        printf("Player %s logged in\n", client -> name);
+                        continue;
+                    }
+                    /*
                     char client_ip[INET_ADDRSTRLEN];
                     inet_ntop(AF_INET, &(client -> addr.sin_addr), client_ip, INET_ADDRSTRLEN);
-                    printf("Message from client %s:%d %s\n", client_ip, ntohs(client -> addr.sin_port), buffer);
+                    */
+                    printf("Message from Player %s: %s\n", client -> name, buffer);
                 }
                 else{
-                    printf("Client disconnected %s:%d\n", inet_ntoa(client -> addr.sin_addr), ntohs(client -> addr.sin_port));
+                    printf("Player %s disconnected\n", client -> name);
                     epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client -> fd, NULL);
 
                     close(client -> fd);
+                    //free memory
+                    for(int j = 0; j < MAX_EVENTS; j++){
+                        if(clients[j] == client){
+                            free(client);
+                            clients[j]= NULL;
+                            break;
+                        }
+                    }
                 }              
             }
         }
