@@ -21,10 +21,25 @@ int main() {
     }
 
     printf("Connected to server.\n");
-    printf("What's your name: ");
-    fgets(buffer, BUFFER_SIZE, stdin);
-    buffer[strcspn(buffer, "\n")] = 0;
-    send(client_socket, buffer, strlen(buffer), 0);
+    while(1){
+        printf("What's your name: ");
+        fgets(buffer, BUFFER_SIZE, stdin);
+        buffer[strcspn(buffer, "\n")] = 0;
+        send(client_socket, buffer, strlen(buffer), 0);
+        int bytes_received = recv(client_socket, buffer, BUFFER_SIZE, 0);
+        if(bytes_received > 0){
+            buffer[bytes_received] = '\0';
+            printf("Server response: %s\n", buffer);
+            
+            if(strcmp(buffer, "Welcome, you have successfully logged in!") == 0){
+                break;;
+            }
+        }
+        else{
+            printf("Server response: %s\n", buffer);
+            continue;
+        }
+    }
     while (1){
         printf("Enter message: ");
         fgets(buffer, BUFFER_SIZE, stdin);

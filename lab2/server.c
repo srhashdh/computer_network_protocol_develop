@@ -51,8 +51,7 @@ int main(){
                 event.data.ptr = client;
                 epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_fd, &event);
                 printf("New connection from %s: %d\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
-            }
-                
+            }                
             else{
                 //handle client info
                 struct client_info *client = (struct client_info *)events[i].data.ptr;
@@ -62,8 +61,27 @@ int main(){
                 if(valread > 0){
                     buffer[valread] = '\0'; //make sure the string is null terminated
                     if(client -> name[0] == '\0'){
-                        strcpy(client -> name, buffer);
-                        printf("Player %s logged in\n", client -> name);
+                        bool name_taken = false;
+                        for(int i = 0; i < MAX_EVENTS; i++){
+                            if(clients[i] && strcmp(clients[i] -> name, buffer) == 0){
+                                name_taken = true;
+                                break;
+                            }
+                        }
+                        if(!name_taken){
+                            strcpy(client -> name, buffer);
+                            printf("Player %s logged in\n", client -> name);
+                            char *welcome_message = "Welcome, you have successfully logged in!";
+                            send(client -> fd, welcome_message, strlen(welcome_message), 0);
+                        }
+                        else{
+                            char *error_message = "Name already taken. Please enter a different name";
+                            send(client -> fd, error_message, strlen(error_message), 0);
+                            valread = read(client -> fd, buffer, BUFFER_SIZE);
+                            buffer[valread] = '\0';
+
+                            continue;
+                        }
                         continue;
                     }
                     /*

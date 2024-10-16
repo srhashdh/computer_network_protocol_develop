@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,6 +5,7 @@
 #include <arpa/inet.h>
 #include <sys/epoll.h>
 #include <fcntl.h>
+#include <stdbool.h>
 #ifndef DEFINE_H
 #define DEFINE_H
 #define SERVER_IP "127.0.0.1"
