@@ -1,5 +1,5 @@
 #include "define.h"
-
+struct infomation *info = NULL;
 int main() {
     int server_fd;
     struct sockaddr_in server_addr;
@@ -25,6 +25,10 @@ int main() {
     }
     
     printf("Connected to server.\n");
+    info = malloc(sizeof(struct infomation));
+    info -> fd = server_fd;
+    info -> name[0] = '\0';
+    info -> rival[0] = '\0';
     //pthread_create(&server_response, NULL, broadcast_fromServer, &server_fd);
     loggin_to_server(server_fd);
 /*

@@ -16,6 +16,12 @@
 #define BUFFER_SIZE 1024
 #define MAX_EVENTS 10
 
+struct infomation{
+    int fd;
+    char name[BUFFER_SIZE];
+    char rival[BUFFER_SIZE];
+};
+extern struct infomation *info;
 int main();
 void loggin_to_server(int server_fd);
 void *broadcast_fromServer(void *args);

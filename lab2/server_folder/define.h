@@ -27,7 +27,7 @@ struct client_info{
     char name[BUFFER_SIZE];
     enum client_state state;
 };
-extern struct client_info *clients[MAX_EVENTS];;
+extern struct client_info *clients[MAX_EVENTS];
 void loggin_clients(int epoll_fd, int server_fd);
 int main();
 void display_online_clients();

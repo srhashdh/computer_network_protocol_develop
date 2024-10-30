@@ -67,12 +67,14 @@ void loggin_clients(int epoll_fd, int server_fd) {
                         } else {
                             cJSON_AddStringToObject(response, "loggin", "fail");
                         }
+                        cJSON_AddStringToObject(response, "name", client -> name);
                         char *json_string = cJSON_PrintUnformatted(response);
                         send(client->fd, json_string, strlen(json_string), 0);
                         free(json_string);
                         cJSON_Delete(response);
                     } else if (client->state == STATE_IN_WAITING) {
                         // 处理已登录客户端的命令或操作
+                        //handle_clientRequest();
                     }
                     cJSON_Delete(cjson); // 删除解析的 JSON 对象
                 } else {

@@ -2,7 +2,6 @@
 
 void *broadcast_fromServer(void *args) {
     int server_fd = *(int *) args;
-
     while (1) {
         char buffer[BUFFER_SIZE];
         // 接收数据
@@ -20,26 +19,42 @@ void *broadcast_fromServer(void *args) {
             }
 
             // 获取 player 和 state 字段
-            const char *cjson_player = cJSON_GetObjectItem(cjson, "player")->valuestring;
-            const char *cjson_state = cJSON_GetObjectItem(cjson, "state")->valuestring;
+            const char *cjson_type = cJSON_GetObjectItem(cjson, "type") -> valuestring;
+            if(strcmp(cjson_type, "broadcast") == 0){
+                const char *cjson_player = cJSON_GetObjectItem(cjson, "player") -> valuestring;
+                const char *cjson_state = cJSON_GetObjectItem(cjson, "state") -> valuestring;
+
+            // 检查获取的字符串是否有效
+                if (cjson_player && cjson_state) {
+                    printf("Update from server: player %s %s\n", cjson_player, cjson_state);
+                }
+            
+                else {
+                    printf("Player or state not found in JSON\n");
+                }
+            }
+            /*
+            const char *cjson_player = cJSON_GetObjectItem(cjson, "player") -> valuestring;
+            const char *cjson_state = cJSON_GetObjectItem(cjson, "state") -> valuestring;
 
             // 检查获取的字符串是否有效
             if (cjson_player && cjson_state) {
                 printf("Update from server: player %s %s\n", cjson_player, cjson_state);
-            } else {
+            }
+            else {
                 printf("Player or state not found in JSON\n");
             }
-
+*/
             // 释放 JSON 对象
             cJSON_Delete(cjson);
         } else if (bytes_received == 0) {
             // 连接关闭的处理
             printf("Server closed the connection\n");
-            break; // 退出循环
+            break;
         } else {
             // 错误处理
             perror("recv failed");
-            break; // 退出循环
+            break;
         }
     }
 

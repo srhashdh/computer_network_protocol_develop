@@ -11,7 +11,7 @@ void broadcast_toClients(char *player, char *state) {
     // 添加 player 和 state 字段
     cJSON_AddStringToObject(cjson, "player", player);
     cJSON_AddStringToObject(cjson, "state", state);
-    
+    cJSON_AddStringToObject(cjson, "type", "broadcast");
     // 打印为字符串
     char *json_string = cJSON_PrintUnformatted(cjson);
     if (json_string == NULL) {
