@@ -1,12 +1,16 @@
 #include "define.h"
 
 int main() {
-    int client_socket;
+    int server_fd;
     struct sockaddr_in server_addr;
-    char buffer[BUFFER_SIZE];
+    //char buffer[BUFFER_SIZE];
+    //pthread_t server_response;
 
-    client_socket = socket(AF_INET, SOCK_STREAM, 0);
-    if (client_socket == -1) {
+    //create admin thread to handle input
+  //  pthread_create(&server_response, NULL, broadcast_fromServer, NULL);
+
+    server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (server_fd == -1) {
         perror("Socket creation failed");
         exit(EXIT_FAILURE);
     }
@@ -15,12 +19,15 @@ int main() {
     server_addr.sin_port = htons(PORT);
     server_addr.sin_addr.s_addr = inet_addr(SERVER_IP);
 
-    if (connect(client_socket, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1) {
+    if (connect(server_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1) {
         perror("Connection failed");
         exit(EXIT_FAILURE);
     }
-
+    
     printf("Connected to server.\n");
+    //pthread_create(&server_response, NULL, broadcast_fromServer, &server_fd);
+    loggin_to_server(server_fd);
+/*
     while(1){
         printf("What's your name: ");
         fgets(buffer, BUFFER_SIZE, stdin);
@@ -40,14 +47,15 @@ int main() {
             continue;
         }
     }
+
     while (1){
         printf("Enter message: ");
         fgets(buffer, BUFFER_SIZE, stdin);
         buffer[strcspn(buffer, "\n")] = 0;
         send(client_socket, buffer, strlen(buffer), 0);
     }
-
-    close(client_socket);
+    */
+    close(server_fd);
 
     return 0;
 }
