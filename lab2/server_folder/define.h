@@ -28,9 +28,13 @@ struct client_info{
     enum client_state state;
 };
 extern struct client_info *clients[MAX_EVENTS];
-void loggin_clients(int epoll_fd, int server_fd);
+void connect_toClients(int epoll_fd, int server_fd);
 int main();
 void display_online_clients();
-void *handle_admin_input(void *args);
+void *handle_admin_input(void *arg);
 void broadcast_toClients(char *player, char *state);
+void *handle_clientRequest(void *arg);
+extern pthread_mutex_t clients_mutex;
+void send_showListToClient(struct client_info *client, const char *cjson_name);
+void loggin(struct client_info *client, const char* cjson_name);
 #endif

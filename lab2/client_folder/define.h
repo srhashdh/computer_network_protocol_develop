@@ -24,5 +24,9 @@ struct infomation{
 extern struct infomation *info;
 int main();
 void loggin_to_server(int server_fd);
-void *broadcast_fromServer(void *args);
+void broadcast_fromServer(cJSON *cjson);
+void request_listFromServer();
+void *handle_clientCommand(void *arg);
+void handle_serverResponse(int server_fd);
+void show_listFromServer(cJSON *cjson);
 #endif

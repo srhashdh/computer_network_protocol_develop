@@ -35,37 +35,51 @@ void loggin_to_server(int server_fd){
             if(strcmp(cjson_loggin, "success") == 0){
                 printf(", welcome\n");
                 strcpy(info -> name, cjson_name);
-                break;
+                
+                /*
+                pthread_t client_thread;
+                pthread_create(&client_thread, NULL, handle_clientCommand, &server_fd);
+                broadcast_fromServer(server_fd);
+                */
+                /*
+                pthread_t broadcast;
+                pthread_create(&broadcast, NULL, broadcast_fromServer, &server_fd);
+                handle_clientCommand(server_fd);
+                */
+                pthread_t command;
+                pthread_create(&command, NULL, handle_clientCommand, &server_fd);
+                handle_serverResponse(server_fd);
             }
             else{
                 printf("\n");
             }
             
         }
-        else{
-            printf("Server response: %s\n", buffer);
-            continue;
-        }
     }
-    pthread_t broadcast, client_command;
+    //pthread_t client_command;
+    //broadcast;
+    //client_command;
     //server response
+    //broadcast_fromServer(server_fd);
+    /*
     if(pthread_create(&broadcast, NULL, broadcast_fromServer, &server_fd) != 0){
-        perror("Failed to create thread");
+        perror("Failed to create thread broadcast");
         return;
     }
+    handle_clientCommand(server_fd);
     if (pthread_join(broadcast, NULL) != 0) {
-        perror("Failed to join thread");
+        perror("Failed to join thread broadcast");
         return;
     }
-/*
+
     //client command
     if(pthread_create(&client_command, NULL, handle_clientCommand, &server_fd) != 0){
-        perror("Failed to create thread");
+        perror("Failed to create thread client command");
         return;
     }
     if (pthread_join(client_command, NULL) != 0) {
-        perror("Failed to join thread");
+        perror("Failed to join thread command");
         return;
     }
-*/    
+    */
 }

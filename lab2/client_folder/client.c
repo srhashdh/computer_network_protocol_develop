@@ -1,5 +1,6 @@
 #include "define.h"
 struct infomation *info = NULL;
+pthread_mutex_t send_mutex = PTHREAD_MUTEX_INITIALIZER;
 int main() {
     int server_fd;
     struct sockaddr_in server_addr;

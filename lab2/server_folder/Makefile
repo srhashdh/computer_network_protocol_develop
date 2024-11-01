@@ -6,7 +6,7 @@ CC = gcc
 TARGET = server
 
 # 源碼文件
-SRCS = server.c loggin_clients.c handle_admin_input.c display_online_clients.c broadcast_toClients.c cJSON.c
+SRCS = server.c connect_toClients.c handle_admin_input.c display_online_clients.c broadcast_toClients.c handle_clientRequest.c send_showListToClient.c loggin.c cJSON.c
 
 # 目標文件
 OBJS = $(SRCS:.c=.o)

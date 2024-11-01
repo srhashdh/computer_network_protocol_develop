@@ -7,7 +7,9 @@ void *handle_admin_input(void *arg){
         command[strcspn(command, "\n")] = 0;
         
         if(strcmp(command, "s") == 0){
+            pthread_mutex_lock(&clients_mutex);
             display_online_clients();
+            pthread_mutex_unlock(&clients_mutex);
         }
         else{
             printf("this command doesn't exit");
