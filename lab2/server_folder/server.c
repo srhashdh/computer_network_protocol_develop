@@ -18,13 +18,13 @@ int main() {
 
     pthread_t admin_thread;
 
-    // 创建管理员线程以处理输入
+    
     if (pthread_create(&admin_thread, NULL, handle_admin_input, NULL) != 0) {
         perror("Failed to create admin thread");
         return EXIT_FAILURE;
     }
 
-    // 创建服务器套接字
+    
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         perror("Socket creation failed");
         return EXIT_FAILURE;
@@ -45,7 +45,7 @@ int main() {
         return EXIT_FAILURE;
     }
 
-    // 创建 epoll 实例
+    
     if ((epoll_fd = epoll_create1(0)) < 0) {
         perror("Epoll creation failed");
         return EXIT_FAILURE;

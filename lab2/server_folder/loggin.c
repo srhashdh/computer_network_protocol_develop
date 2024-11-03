@@ -2,7 +2,7 @@
 
 void loggin(struct client_info *client, const char* cjson_name){
     bool name_taken = false;
-    pthread_mutex_lock(&clients_mutex);
+    
     for (int i = 0; i < MAX_EVENTS; i++) {
         if (clients[i] && strcmp(clients[i]->name, cjson_name) == 0) {
             name_taken = true;
@@ -25,5 +25,5 @@ void loggin(struct client_info *client, const char* cjson_name){
     send(client->fd, json_string, strlen(json_string), 0);
     free(json_string);
     cJSON_Delete(response);
-    pthread_mutex_unlock(&clients_mutex);
+    
 }

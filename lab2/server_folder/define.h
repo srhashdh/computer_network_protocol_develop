@@ -26,6 +26,8 @@ struct client_info{
     struct sockaddr_in addr;
     char name[BUFFER_SIZE];
     enum client_state state;
+    bool battle_res;
+    int choice;
 };
 extern struct client_info *clients[MAX_EVENTS];
 void connect_toClients(int epoll_fd, int server_fd);
@@ -37,4 +39,7 @@ void *handle_clientRequest(void *arg);
 extern pthread_mutex_t clients_mutex;
 void send_showListToClient(struct client_info *client, const char *cjson_name);
 void loggin(struct client_info *client, const char* cjson_name);
+void send_battleRequestToClient(struct client_info *client, cJSON *cjson);
+void send_battleRequestResultToClient(struct client_info *client, cJSON *cjson);
+void send_battleResult(struct client_info *client, cJSON *cjson);
 #endif
