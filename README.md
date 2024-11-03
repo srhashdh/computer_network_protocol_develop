@@ -1,4 +1,4 @@
-實際上還有個Lab0，玩玩WireShark而已，雜魚大葛格應該會吧，實驗文檔和lab3就到軍營裡想吧
+實際上還有個Lab0，玩玩WireShark而已，雜魚大葛格應該會吧，實驗文檔和lab4的biTtorrent就到軍營裡想吧
 
 
 Lab1的時候還很愚蠢，code超醜
